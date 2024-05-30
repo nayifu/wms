@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zbkj.service.dao.ActivityProductDao">
+
+    <select id="getH5ListByAid" resultType="com.zbkj.common.vo.ActivityProductInfoVo">
+        select ap.pro_image,ap.pro_id,p.image,p.store_name,p.price,p.ot_price
+        from eb_activity_product ap
+        inner join eb_store_product p on ap.pro_id = p.id
+        where
+        ap.aid = #{aid}
+        and p.is_forced = 0 and p.is_show = 1 and p.is_recycle = 0
+        and p.is_del = 0 and p.audit_status = 1
+        order by ap.sort desc
+    </select>
+    
+</mapper>

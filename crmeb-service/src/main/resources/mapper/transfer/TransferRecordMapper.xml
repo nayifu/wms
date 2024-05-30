@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zbkj.service.dao.TransferRecordDao">
+
+    <select id="getPlatformTransferRecordList" parameterType="java.util.Map" resultType="com.zbkj.common.response.TransferRecordPlatformPageResponse">
+        select tr.id,tr.amount,tr.transfer_type as transferType,tr.transfer_status as transferStatus,tr.audit_status as auditStatus,tr.create_time as createTime,tr.platform_mark as platformMark,
+        m.name as merName,sa.real_name as auditName
+        from eb_transfer_record tr
+        left join eb_merchant m on tr.mer_id = m.id
+        left join eb_system_admin sa on tr.audit_id = sa.id
+        where 1=1
+        <if test="merId != null and merId != ''">
+            and tr.mer_id = #{merId}
+        </if>
+        <if test="auditStatus != null">
+            and tr.audit_status = #{auditStatus}
+        </if>
+        <if test="transferStatus != null">
+            and tr.transfer_status = #{transferStatus}
+        </if>
+        <if test="startTime != null and startTime != ''">
+            and (tr.create_time between #{startTime} and #{endTime})
+        </if>
+        order by tr.id desc
+    </select>
+
+</mapper>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zbkj.service.dao.StoreOrderDao">
+
+    <select id="getOrderStatisticsPriceDetail" parameterType="com.zbkj.common.request.StoreDateRangeSqlPram"
+            resultType="com.zbkj.common.response.StoreOrderStatisticsChartItemResponse">
+        select sum(o.pay_price) as num,date_format(o.create_time, '%Y-%m-%d') as time
+        from eb_store_order o
+        where o.is_del >= 0 and o.paid >= 1 and o.refund_status >= 0
+        and o.create_time >= #{ startTime }
+        and o.create_time &lt; #{ endTime }
+        group by date_format(o.create_time, '%Y-%m-%d')
+        order by o.create_time desc;
+    </select>
+    <select id="getOrderStatisticsOrderCountDetail" parameterType="com.zbkj.common.request.StoreDateRangeSqlPram"
+            resultType="com.zbkj.common.response.StoreOrderStatisticsChartItemResponse">
+        select count(id) as num, date_format(o.create_time, '%Y-%m-%d') as time
+        from eb_store_order o
+        where o.is_del >= 0 and o.paid >= 1 and o.refund_status >= 0
+        and o.create_time >= #{ startTime }
+        and o.create_time &lt; #{ endTime }
+        group by date_format(o.create_time, '%Y-%m-%d')
+        order by o.create_time asc;
+    </select>
+
+</mapper>

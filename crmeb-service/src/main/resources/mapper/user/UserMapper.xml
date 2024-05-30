@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zbkj.service.dao.UserDao">
+
+    <select id="findAdminList" resultType="com.zbkj.common.model.user.User" parameterType="Map">
+        SELECT u.* FROM eb_user AS u
+        where 1 = 1
+        <if test="nikename != '' and nikename != null ">
+            and u.nickname like CONCAT('%',#{nikename},'%')
+        </if>
+        <if test="phone != '' and phone != null ">
+            and u.phone = #{phone, jdbcType=VARCHAR}
+        </if>
+        <if test="email != '' and email != null ">
+            and u.email = #{email, jdbcType=VARCHAR}
+        </if>
+         <if test="tagIdSql != null and tagIdSql !='' ">
+            and ${tagIdSql}
+        </if>
+        <if test="userType != null and userType !='' ">
+            and u.user_type = #{userType, jdbcType=VARCHAR}
+        </if>
+        <if test="payCount != null and payCount !='' or payCount == 0 ">
+            <if test="payCount &lt;= 0">
+                and u.pay_count = 0
+            </if>
+            <if test="payCount > 0">
+                and u.pay_count >= ${payCount}
+            </if>
+        </if>
+        <if test="startTime != null and startTime != ''">
+            <choose>
+                <when test="accessType == 1">
+                    and create_time between #{startTime} and #{endTime}
+                    and create_time = last_login_time
+                </when>
+                <when test="accessType == 2">
+                    and last_login_time between #{startTime} and #{endTime}
+                </when>
+                <when test="accessType == 3">
+                    and last_login_time not between #{startTime} and #{endTime}
+                </when>
+                <otherwise>
+                    and last_login_time between #{startTime} and #{endTime}
+                </otherwise>
+            </choose>
+        </if>
+        ORDER BY u.uid desc
+    </select>
+
+    <select id="findMerchantList" resultType="com.zbkj.common.model.user.User" parameterType="Map">
+        SELECT u.* FROM eb_user AS u
+        RIGHT JOIN eb_user_merchant_collect um on u.uid = um.uid
+        where
+        um.mer_id = #{merId}
+         <if test="tagId != null and tagId !='' ">
+            and find_in_set(#{tagId, jdbcType=VARCHAR}, u.tag_id)
+        </if>
+        <if test="sex != null and sex !='' ">
+            and u.sex = #{sex}
+        </if>
+        <if test="userType != null and userType !='' ">
+            and u.user_type = #{userType, jdbcType=VARCHAR}
+        </if>
+        <if test="startTime != null and startTime != '' ">
+            and um.create_time between #{startTime} and #{endTime}
+        </if>
+        <if test="email != null and email !='' ">
+            and u.email = #{email, jdbcType=VARCHAR}
+        </if>
+        <if test="keywords != '' and keywords != null ">
+            and u.nickname like CONCAT('%',#{keywords, jdbcType=VARCHAR},'%')
+        </if>
+        ORDER BY u.uid desc
+    </select>
+
+</mapper>
